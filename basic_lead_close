@@ -33,8 +33,8 @@ FROM (
         status_label
 
      
-    FROM `deva6-430318.close_tsc.lead` l
-    LEFT JOIN `deva6-430318.close_tsc.contact` c 
+    FROM `close_tsc.lead` l
+    LEFT JOIN `close_tsc.contact` c 
         ON c.lead_id = l.id
     WHERE TIMESTAMP_TRUNC(TIMESTAMP(l.date_created), DAY) >= TIMESTAMP("2024-01-01")
    AND lead_id IN ('lead_K4ookxOnGUW6pVQF730gS6LK9GcywOLkx70mh48A8mM')
