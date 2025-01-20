@@ -1,4 +1,4 @@
-MERGE `deva6-430318.tsc_dw.fcc-CloseOppo` T
+MERGE `fcc-CloseOppo` T
 USING (
   SELECT DISTINCT
     o.lead_id AS leadid,
