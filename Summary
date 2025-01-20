@@ -1,0 +1,47 @@
+# Data Pipeline Overview
+
+## Data Warehouse / Data Storage
+- **BigQuery**: Centralized data storage for all integrated data sources.
+
+## APIs to BigQuery
+- **Close.com**: API connected and functional, syncing data to BigQuery.
+- **Facebook Ads**: API connected and functional, syncing data to BigQuery.
+
+## Reporting Layer
+- **Looker**: Currently used as the primary reporting tool for data visualization and analysis.
+
+---
+
+### Data Sources (API Integration)
+#### 1. **Facebook Ads**
+- Status: **Connected and working**
+- Data being synced: Ad performance metrics, campaign details, audience insights, etc.
+
+#### 2. **Close.com**
+- Status: **Connected and working**
+- Data being synced: Sales activities, leads, deal stages, revenue details, etc.
+
+---
+
+### Future Enhancements
+1. **Additional Data Sources**
+   - Plan to integrate more APIs (e.g., Google Analytics, HubSpot, etc.).
+   - Ensure compatibility with BigQuery schemas.
+
+2. **Expanded Reporting Layers**
+   - Consider additional tools (e.g., Power BI, Tableau) for broader reporting options.
+
+3. **Automated Data Pipelines**
+   - Schedule regular updates from APIs to BigQuery.
+   - Ensure robust error handling for API failures.
+
+4. **Data Governance**
+   - Implement role-based access control (RBAC) in Looker and BigQuery.
+   - Maintain data quality checks during pipeline processing.
+
+---
+
+### Notes
+- Current setup supports real-time or near real-time reporting for the connected data sources.
+- BigQuery serves as a scalable and secure data warehouse for current and future needs.
+
