@@ -1,0 +1,85 @@
+MERGE `deva6-430318.tsc_dw.fcc-CloseOppo` T
+USING (
+  SELECT DISTINCT
+    o.lead_id AS leadid,
+    primary_email,
+    CONCAT(u.first_name, ' ', u.last_name) AS Lead_Owner_Name,
+     JSON_EXTRACT_SCALAR(JSON_EXTRACT(l.custom, '$'), '$.Recent Booking Page Owner') as BookingOwner,
+    o.updated_by_name,
+    FORMAT_TIMESTAMP('%Y-%m-%d %H:%M:%S', TIMESTAMP(o.date_won)) AS Date_Created_Est,
+    o.id AS Oppo_ID,
+    contact_name,
+   custom_cf_gkrez_ouvak_eje_rbkfoj_hd_5_l_73_k_rvzp_laicen_cdrs_6_gy AS Product,
+   custom_cf_nrio_8_im_vu_x_9_xvj_73_mwg_brj_lahou_bn_hpx_55_l_y_0_oi_grq_4 AS PayTpe,
+    CAST(value AS FLOAT64) / 100 AS value,
+    custom_cf_u_hsq_0_g_wekep_fof_10_pnwrwzh_8_ma_uv_y_1_spfx_9_z_2_tvzg_x_6 AS Custom_Payment,
+    value_period,
+    o.status_label AS status
+   ,custom_cf_t_ng_12_ogdq_sah_08_l_6_i_1_ni_dx_6_tz_yak_rxu_1_lb_4_oz_svhjrd as Sales_Type
+      ,l.custom_cf_ql_1_t_2_y_6_b_0_va_qo_plk_1_wz_2_cav_c_816_a_b_4_pvhmrhe_n_2_w_gq_k as Payment_Plan
+   ,l.custom
+  -- ,o.*
+  FROM `close_tsc.opportunity` o
+  INNER JOIN `close_tsc.lead` L ON o.lead_id = L.id
+  LEFT JOIN `close_tsc.users` u 
+    ON JSON_EXTRACT_SCALAR(JSON_EXTRACT(l.custom, '$'), '$.Lead Owner') = u.id
+  WHERE status_type = 'won'
+    AND TIMESTAMP_TRUNC(TIMESTAMP(FORMAT_TIMESTAMP('%Y-%m-%d %H:%M:%S', TIMESTAMP(o.date_won))), DAY) >= TIMESTAMP("2023-01-01")
+    --AND lead_id IN ('lead_K4ookxOnGUW6pVQF730gS6LK9GcywOLkx70mh48A8mM')
+) S
+ON T.Oppo_ID = S.Oppo_ID
+
+-- If a matching row exists, update it
+WHEN MATCHED THEN
+  UPDATE SET
+    T.leadid = S.leadid,
+    T.primary_email = S.primary_email,
+    T.Lead_Owner_Name = S.Lead_Owner_Name,
+    T.updated_by_name = S.updated_by_name,
+    T.Date_Created_Est = S.Date_Created_Est,
+    T.contact_name = S.contact_name,
+    T.Product = S.Product,
+    T.PayTpe = S.PayTpe,
+    T.value = S.value,
+    T.Custom_Payment = S.Custom_Payment,
+    T.value_period = S.value_period,
+    T.status = S.status,
+    T.Sales_Type = S.Sales_Type,
+    T.Payment_Plan = S.Payment_Plan
+
+-- If no matching row exists, insert a new one
+WHEN NOT MATCHED THEN
+  INSERT (
+    leadid, 
+    primary_email,
+    Lead_Owner_Name,
+    updated_by_name,
+    Date_Created_Est,
+    Oppo_ID,
+    contact_name,
+    Product,
+    PayTpe,
+    value,
+    Custom_Payment,
+    value_period,
+    status,
+    Sales_Type,
+    Payment_Plan
+  )
+  VALUES (
+    S.leadid, 
+    S.primary_email,
+    S.Lead_Owner_Name,
+    S.updated_by_name,
+    S.Date_Created_Est,
+    S.Oppo_ID,
+    S.contact_name,
+    S.Product,
+    S.PayTpe,
+    S.value,
+    S.Custom_Payment,
+    S.value_period,
+    S.status
+   ,S.Sales_Type
+   ,S.Payment_Plan
+  );
