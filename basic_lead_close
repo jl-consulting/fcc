@@ -1,0 +1,49 @@
+SELECT 
+    'Lead' as DataType
+    ,PARSE_DATE('%Y-%m-%d', Date) AS Date
+    ,case when ai.lead_id is null then 'No Activity' else 'Activity' end as Activity_Flag
+    ,case when CONCAT(u.first_name, ' ', u.last_name) is null then 'Unassigned' else CONCAT(u.first_name, ' ', u.last_name) end AS Lead_Owner_Name,
+    --JSON_EXTRACT_SCALAR(json_data, '$.Lead Source') AS lead_source,
+    x.leadid,
+    x.date_created,
+    x.date_updated,
+    x.primary_email,
+    display_name,
+    x.updated_by_name,
+    created_by_name,
+    x.Date_Created_Est,
+    primary_opportunity_status_display_name,
+    json_data,
+    status_label
+
+FROM (
+    SELECT DISTINCT
+        l.id AS leadid,
+        l.date_created,
+        l.date_updated,
+        primary_email,
+        l.display_name,
+        l.updated_by_name,
+        l.created_by_name,
+        FORMAT_TIMESTAMP('%Y-%m-%d %H:%M:%S', TIMESTAMP(l.date_created)) AS Date_Created_Est,
+        FORMAT_TIMESTAMP('%Y-%m-%d', TIMESTAMP(l.date_created)) AS Date,
+        primary_opportunity_status_display_name,
+        
+        JSON_EXTRACT(l.custom, '$') AS json_data,
+        status_label
+
+     
+    FROM `deva6-430318.close_tsc.lead` l
+    LEFT JOIN `deva6-430318.close_tsc.contact` c 
+        ON c.lead_id = l.id
+    WHERE TIMESTAMP_TRUNC(TIMESTAMP(l.date_created), DAY) >= TIMESTAMP("2024-01-01")
+   AND lead_id IN ('lead_K4ookxOnGUW6pVQF730gS6LK9GcywOLkx70mh48A8mM')
+) x
+LEFT JOIN `close_tsc.users` u 
+    ON JSON_EXTRACT_SCALAR(json_data, '$.Lead Owner') = u.id
+
+ --LEFT JOIN    `tsc_dw.CloseOppo` o on o.leadid = x.leadid
+
+ LEFT JOIN (select distinct lead_id 
+ from `close_tsc.custom_activity_instance` )ai
+ on ai.lead_id = x.leadid
