@@ -1,0 +1,49 @@
+SELECT 
+    'Oppo' as DataType
+    ,CONCAT(u.first_name, ' ', u.last_name) AS Lead_Owner_Name,
+    PageOwner,
+    JSON_EXTRACT_SCALAR(json_data, '$.Lead Source') AS lead_source,
+    x.leadid,
+    x.date_created,
+    x.date_updated,
+    x.primary_email,
+    display_name,
+    x.updated_by_name,
+    created_by_name,
+    FORMAT_TIMESTAMP('%Y-%m-%d %H:%M:%S', TIMESTAMP(o.Date_Created_Est)) AS Date_Created_Est,
+    primary_opportunity_status_display_name,
+    json_data,
+    status_label
+    ,Oppo_ID
+    ,o.Product
+    ,o.value as Contract_Value
+    ,o.status as Oppo_Status
+    ,o.Date_Created_Est as OppoDate
+
+FROM (
+    SELECT DISTINCT
+        l.id AS leadid,
+        l.date_created,
+        l.date_updated,
+        primary_email,
+        l.display_name,
+        l.updated_by_name,
+        l.created_by_name,
+       JSON_EXTRACT_SCALAR(JSON_EXTRACT(l.custom, '$'), '$.Recent Booking Page Owner')as PageOwner,
+        primary_opportunity_status_display_name,
+        
+        JSON_EXTRACT(l.custom, '$') AS json_data,
+        status_label
+
+    FROM `close_tsc.lead` l
+    LEFT JOIN `close_tsc.contact` c 
+        ON c.lead_id = l.id
+    
+
+) x
+LEFT JOIN `close_tsc.users` u 
+    ON JSON_EXTRACT_SCALAR(json_data, '$.Lead Owner') = u.id
+
+inner JOIN    `tsc_dw.fcc-CloseOppo` o on o.leadid = x.leadid
+
+ WHERE TIMESTAMP_TRUNC(TIMESTAMP(o.Date_Created_Est), DAY) >= TIMESTAMP("2024-01-01")
