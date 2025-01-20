@@ -1,0 +1,71 @@
+
+select 
+  SPLIT(display_name, ' ')[SAFE_OFFSET(0)] AS first_name
+  ,SPLIT(display_name, ' ')[SAFE_OFFSET(1)] AS last_name
+  ,primary_email as email
+,Phone_number
+,Booked_date
+,Scheduled_date
+,FORMAT_TIMESTAMP('%m/%d/%Y %H:%M:%S', TIMESTAMP(Booked_date_time)) AS Booked_date_time
+,FORMAT_TIMESTAMP('%m/%d/%Y %H:%M:%S', TIMESTAMP(Scheduled_date_time)) AS Scheduled_date_time
+,Customer_Time_Zone
+,booking_gap_in_days
+,event_Type
+,main.Booking_Page
+,main.Rotator_Name
+,case when status = 'draft' then CONCAT(u2.first_name, ' ', u2.last_name) else CONCAT(u.first_name, ' ', u.last_name) end as Booking_Page_Owner
+,'' as SO_Booking_ID
+,main.Lead_id
+,main.id as Custom_Activity_ID
+,main.Meeting_Outcome
+,main.Meeting_Outcome_Date
+,main.Product_Discussed
+,main.Meeting_Disposition
+
+from (
+
+SELECT 
+ai.lead_id
+,ai.id
+,display_name
+,primary_phone_formatted as Phone_Number
+,primary_email
+,custom_cf_k_i_0_l_jffs_pxo_xi_5_dfqs_7_d_hlh_5_s_nk_pg_9_s_7_mme_sgnn_0_mra as Booked_date 
+,custom_cf_v_6_j_54_b_xn_ks_1_gmz_lbvtr_a_3_z_irtp_cv_zlze_bptc_q_4_safys as Scheduled_date
+,custom_cf_da_7_io_zk_wxk_6_eh_4_d_ol_0_rtumi_8_o_pthhl_bswil_eyvb_xpjh as Booked_date_time
+,custom_cf_c_4_wz_fd_kixb_0_uons_jfd_7_a_dtrkm_14_cp_at_7_y_x_7_iw_ddk_oer as Scheduled_date_time
+,custom_cf_5_yp_r_1_o_7_sfom_pix_8_cp_qkqfpw_u_6_xwl_cvkuyo_tzjnfygzo as Customer_Time_Zone
+,custom_cf_j_yzf_0_t_5_g_kvf_vtdlixo_3_nqjk_uakug_fo_u_82_f_n_2_pzq_6_nxo as booking_gap_in_days
+,custom_cf_i_8_m_clfnwd_hn_z_0_f_bfn_jd_oqd_tfk_8_x_t_5_uyl_9_b_rj_0_l_h_2_l_ug AS Event_Type
+,custom_cf_sp_g_9_el_cx_0_yx_2_sw_vyqnx_itgcz_tei_bp_ei_71_i_3_hno_2_vec_b as Rotator_Name
+,custom_cf_p_0_plcy_aaat_li_6_gpxaye_0_mkrbb_fjpjhf_an_ndc_5_uy_xu_fu as Booking_Page
+,custom_cf_ez_pusy_g_6_ibazmj_hig_0_iqhncn_ftyums_39_e_okdz_oz_0_ef_a as Product_Discussed
+,custom_cf_w_tx_gss_9_md_g_0_xpt_fpa_qdj_xy_kh_qvj_lv_xibs_jmiv_4_d_1_g_p_1 as Meeting_Disposition
+,custom_cf_vcq_bip_9_n_cfr_1_t_s_9_a_qur_jd_8_pns_se_jso_km_vur_4_ockd_34_v as Meeting_Outcome
+,custom_cf_zih_mc_dsa_ifa_4_yg_szli_8_hltw_0_suk_1_x_jdq_ni_3_z_wrr_2_s_nr as Meeting_Outcome_Date
+,custom_cf_vqy_en_8_fder_jz_kk_4_z_szxt_ywp_6_q_8_kcwjad_stlp_1_jki_84_y as Booking_Page_Owner
+,user_name
+,JSON_EXTRACT(l.custom, '$') AS json_data,
+        FORMAT_TIMESTAMP('%Y-%m-%d %H:%M:%S', TIMESTAMP(l.date_created)) AS Date_Created_Est,
+        primary_opportunity_status_display_name,
+ai.updated_by
+,ai,status
+,ai.user_id as acti_user
+FROM 
+
+`custom_activity_instance` ai
+inner join `close_tsc.lead` L on ai.lead_id = L.id
+
+
+where 
+custom_cf_v_6_j_54_b_xn_ks_1_gmz_lbvtr_a_3_z_irtp_cv_zlze_bptc_q_4_safys >='2024-01-01'
+)main
+
+LEFT JOIN `deva6-430318.close_tsc.users` u 
+    ON updated_by = u.id
+
+LEFT JOIN `deva6-430318.close_tsc.users` u2
+    ON main.Acti_user = u2.id
+
+
+
