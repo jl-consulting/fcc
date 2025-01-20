@@ -25,7 +25,7 @@
 
 ### Future Enhancements
 1. **Additional Data Sources**
-   - Plan to integrate more APIs (e.g., Google Analytics, HubSpot, etc.).
+   - We can add more API if needed
    - Ensure compatibility with BigQuery schemas.
 
 2. **Expanded Reporting Layers**
